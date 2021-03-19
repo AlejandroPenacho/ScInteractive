@@ -1,4 +1,8 @@
 export function createProgram(gl, vertexSource, fragmentSource){
+	// Takes a context, a string with the code for the vertex shader and
+	// for the fragment shader. Compiles both codes and links them, generating
+	// a wrapped program that includes the final program and dictionaries with
+	// the attributes and uniforms of the program.
 
     var shaders = [
         gl.createShader(gl.VERTEX_SHADER),
@@ -51,6 +55,17 @@ export function createProgram(gl, vertexSource, fragmentSource){
 }
 
 export function appendAttributeData(wrappedProgram, attributeData){
+	// To each attribute in the wrapped program, includes the parameters
+	// of each one, as described in attributeData. THis is a dictionary
+	// which, for each attribute, includes:
+	//
+	//		type	:	type of the data (for example, gl.FLOAT)
+	//		size	:	number of elements taken per iteration
+	//		stride	:	the stride (you know what that means)
+	//		offset	:	offset of the attribute
+	//
+	// These parameters are not required until the attributes
+	// are enabled and configured.
 
 	var attributeList = Object.keys(wrappedProgram.attributes);
 
@@ -67,6 +82,9 @@ export function appendAttributeData(wrappedProgram, attributeData){
 }
 
 export function generateAttributeBuffers(gl, wrappedProgram) {
+	// Generates a buffer for each attribute, and appends it
+	// to its dictionary inside wrappedProgram. Does not take
+	// any additional input, and does not require anything.
 	
 	var attributeList = Object.keys(wrappedProgram.attributes);
 
@@ -81,6 +99,12 @@ export function generateAttributeBuffers(gl, wrappedProgram) {
 
 
 export function fillAttributeBuffers(gl, wrappedProgram, attributeData){
+	// Writed the data in attributeData to the buffers of each attribute.
+	// attributeData is a dictionary, taking the attributes as keys, and
+	// the data as values. It must be in the correct format (generated
+	// with new float32Array, for example). The buffers must have been
+	// previously generated (with "generateAttributeBuffers()"). This
+	// can be the last step before drawing.
 
 	var attributeList = Object.keys(wrappedProgram.attributes);
 
@@ -92,6 +116,12 @@ export function fillAttributeBuffers(gl, wrappedProgram, attributeData){
 }
 
 export function enableAttributes(gl, wrappedProgram){
+	// Enable and configure the pointer of all attributes in the program.
+	// Requires the attribute data to have been appended (with 
+	// "appendAttributeData()") and the buffers to have been generated (with 
+	// "generateAttributeBuffers()").
+
+
 	var attributeList = Object.keys(wrappedProgram.attributes);
 
 	for (let i=0; i<attributeList.length; i++) {
