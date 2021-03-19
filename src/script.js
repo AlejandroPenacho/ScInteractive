@@ -9,6 +9,7 @@ var gl = canvas.getContext("webgl");
 
 var wrappedProgram = utils.createProgram(gl, vertexShaderSource, fragmentShaderSource);
 
+
 var attributeParameter = {
 	a_position : {
 		type		:	gl.FLOAT,

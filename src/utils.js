@@ -92,7 +92,6 @@ export function generateAttributeBuffers(gl, wrappedProgram) {
 		var attribute = wrappedProgram.attributes[attributeList[i]];
 		var newBuffer = gl.createBuffer();
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, newBuffer);
 		attribute.buffer = newBuffer;
 	}
 }
