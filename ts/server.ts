@@ -7,7 +7,7 @@ http.createServer(function (request : any, response : any) {
 
     var filePath = '.' + request.url;
     if (filePath == './')
-        filePath = './src/index.html';
+        filePath = './static/index.html';
 
     var extname = path.extname(filePath);
     var contentType = 'text/html';
