@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir" : "./src",
+    "target" : "es5",
+    "module" : "es2015",
+    "moduleResolution": "node"
+  },
+  "include" : ["./ts/**/*"]
+}

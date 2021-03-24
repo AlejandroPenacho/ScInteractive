@@ -1,18 +1,63 @@
-export function createProgram(gl, vertexSource, fragmentSource){
+interface WebGLWrappedAttribute {
+	location : number,
+	size? : number,
+	type? : number,
+	offset? : number,
+	stride? : number
+
+}
+
+interface WebGLAttributeProperties {
+	type : number,
+	size : number,
+	normalize : boolean,
+	stride : number,
+	offset : number
+
+}
+
+interface WebGLWrappedUniform {
+	location : WebGLUniformLocation
+}
+
+interface WebGLWrappedProgram {
+	program : WebGLProgram,
+	attributes : any,
+	uniforms : any
+}
+
+interface Dictionary<T> {
+	[Key : string] : T
+}
+
+export function createProgram(gl: WebGLRenderingContext, vertexSource : string, fragmentSource : string){
 	// Takes a context, a string with the code for the vertex shader and
 	// for the fragment shader. Compiles both codes and links them, generating
 	// a wrapped program that includes the final program and dictionaries with
 	// the attributes and uniforms of the program.
 
-    var shaders = [
-        gl.createShader(gl.VERTEX_SHADER),
-        gl.createShader(gl.FRAGMENT_SHADER)
+	var vertexShader : null | WebGLShader = gl.createShader(gl.VERTEX_SHADER);
+	var fragmentShader : null | WebGLShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+	if (!vertexShader || !fragmentShader) {
+		throw "Shaders could not be generated XDDDDD";
+	}
+
+    var shaders: WebGLShader[] = [
+		vertexShader,
+		fragmentShader
     ];
 
-    var shaderNames = ["vertex", "fragment"];
-    var shaderSources = [vertexSource, fragmentSource];
+    var shaderNames : string[] = ["vertex", "fragment"];
+    var shaderSources : string[] = [vertexSource, fragmentSource];
 
-    var program = gl.createProgram();
+    var tryProgram = gl.createProgram();
+
+	if (!tryProgram){
+		throw "Program could not be generated (worse than compilation error";
+	}
+
+	var program : WebGLProgram = tryProgram;
 
     for (let i=0; i<2; i++){
         gl.shaderSource(shaders[i], shaderSources[i]);
@@ -31,19 +76,30 @@ export function createProgram(gl, vertexSource, fragmentSource){
     }
 
 
-	let nActiveAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
-	let nActiveUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+	let nActiveAttributes : number = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+	let nActiveUniforms : number = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
-	var activeAttributes = {};
+
+	var activeAttributes : Dictionary<WebGLWrappedAttribute> = {};
 	for (let i=0; i<nActiveAttributes; i++) {
-		let currentAttribute = gl.getActiveAttrib(program, i);
-		activeAttributes[currentAttribute.name] = {id : currentAttribute};
+		var currentAttribute = gl.getActiveAttrib(program, i);
+		if (!currentAttribute){
+			throw "Attribute failed";
+		}
+		activeAttributes[currentAttribute.name] = {location : i};
 	}
 
-	var activeUniforms = {};
+	var activeUniforms : Dictionary<WebGLWrappedUniform> = {};
 	for (let i=0; i<nActiveUniforms; i++) {
-		let currentUniform = gl.getActiveUniform(program, i);
-		activeUniforms[currentUniform.name] = {id : currentUniform};
+		var currentUniform : WebGLActiveInfo | null = gl.getActiveUniform(program, i);
+		if (!currentUniform){
+			throw "Uniform failed";
+		}
+		var uniformLocation : WebGLUniformLocation|null = gl.getUniformLocation(program, currentUniform.name);
+		if (!uniformLocation){
+			throw "Another frightening error that seems to be possible in this nigthmare";
+		}
+		activeUniforms[currentUniform.name] = {location : uniformLocation};
 	}
 
     return {
@@ -54,7 +110,7 @@ export function createProgram(gl, vertexSource, fragmentSource){
 
 }
 
-export function appendAttributeData(wrappedProgram, attributeData){
+export function appendAttributeProperties(wrappedProgram : WebGLWrappedProgram, attributeProperties : Dictionary<WebGLAttributeProperties>){
 	// To each attribute in the wrapped program, includes the parameters
 	// of each one, as described in attributeData. THis is a dictionary
 	// which, for each attribute, includes:
@@ -72,16 +128,18 @@ export function appendAttributeData(wrappedProgram, attributeData){
 	for (let i = 0; i < attributeList.length; i++) {
 		let key = attributeList[i];
 
-		wrappedProgram.attributes[key].type			=	attributeData[key].type;
-		wrappedProgram.attributes[key].size			=	attributeData[key].size;
-		wrappedProgram.attributes[key].normalize	=	attributeData[key].normalize;
-		wrappedProgram.attributes[key].stride		=	attributeData[key].stride;
-		wrappedProgram.attributes[key].offset		=	attributeData[key].offset;
+		console.log(key);
+
+		wrappedProgram.attributes[key].type			=	attributeProperties[key].type;
+		wrappedProgram.attributes[key].size			=	attributeProperties[key].size;
+		wrappedProgram.attributes[key].normalize	=	attributeProperties[key].normalize;
+		wrappedProgram.attributes[key].stride		=	attributeProperties[key].stride;
+		wrappedProgram.attributes[key].offset		=	attributeProperties[key].offset;
 	}
 	
 }
 
-export function generateAttributeBuffers(gl, wrappedProgram) {
+export function generateAttributeBuffers(gl : WebGLRenderingContext, wrappedProgram : WebGLWrappedProgram) {
 	// Generates a buffer for each attribute, and appends it
 	// to its dictionary inside wrappedProgram. Does not take
 	// any additional input, and does not require anything.
@@ -90,14 +148,18 @@ export function generateAttributeBuffers(gl, wrappedProgram) {
 
 	for (let i=0; i<attributeList.length; i++) {
 		var attribute = wrappedProgram.attributes[attributeList[i]];
-		var newBuffer = gl.createBuffer();
+		var newBuffer : WebGLBuffer | null = gl.createBuffer();
+		if (!newBuffer){
+			throw "Error creating buffer";
+		}
 
 		attribute.buffer = newBuffer;
 	}
 }
 
-
-export function fillAttributeBuffers(gl, wrappedProgram, attributeData){
+export function fillAttributeBuffers(gl : WebGLRenderingContext,
+									 wrappedProgram : WebGLWrappedProgram,
+									 attributeData : Dictionary<Float32Array | Float64Array | Int16Array | Int32Array | BigInt64Array>){
 	// Writed the data in attributeData to the buffers of each attribute.
 	// attributeData is a dictionary, taking the attributes as keys, and
 	// the data as values. It must be in the correct format (generated
@@ -114,7 +176,7 @@ export function fillAttributeBuffers(gl, wrappedProgram, attributeData){
 	}
 }
 
-export function enableAttributes(gl, wrappedProgram){
+export function enableAttributes(gl : WebGLRenderingContext, wrappedProgram : WebGLWrappedProgram){
 	// Enable and configure the pointer of all attributes in the program.
 	// Requires the attribute data to have been appended (with 
 	// "appendAttributeData()") and the buffers to have been generated (with 
@@ -127,9 +189,9 @@ export function enableAttributes(gl, wrappedProgram){
 		let attribute = wrappedProgram.attributes[attributeList[i]];
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer);
-		gl.enableVertexAttribArray(attribute.id);
+		gl.enableVertexAttribArray(attribute.location);
 		gl.vertexAttribPointer(	
-			attribute.id,
+			attribute.location,
 			attribute.size,
 			attribute.type,
 			attribute.normalize,

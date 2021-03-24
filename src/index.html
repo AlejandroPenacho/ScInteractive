@@ -6,27 +6,33 @@
 </header>
 
 <script id="vertexShader" type="notjs">
-	
-	attribute vec2 a_position;
-	
+	attribute vec3 a_position;
+
+	uniform mat3 u_matrix;
+
+	varying float v_color;
+
 	void main() {
-		gl_Position = vec4(a_position, 0, 1);
+		gl_Position = vec4(u_matrix * a_position, 1);
+		v_color = a_position.z;
 	}
 </script>
 
 <script id="fragmentShader" type="notjs">
 	precision mediump float;
-		
+
+	varying float v_color;
+
 	void main() {
-		gl_FragColor = vec4(1, 0, 0, 1);
+		gl_FragColor = vec4(0, v_color, 0, 1);
 	}
 </script>
 
 <body>
 	<h1 id="hey"> HEY </h1>
 	
-	<canvas id="gl-canvas" width="900" height="600" style="height: 600px; width: 900px; border-style: solid"></canvas>
+	<canvas id="gl-canvas" width="1400" height="920" style="height: 1400; width: 920; border-style: solid"></canvas>
 
-	<script type="module" src="./src/script.js"></script>
+	<script type="module" src="./src/script/script.js"></script>
 </body>
 
