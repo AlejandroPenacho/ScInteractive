@@ -1,5 +1,6 @@
 import * as utils from "./utils.js";
-import * as mtx from "./mesh2D.js";
+import * as msh from "./mesh2D.js";
+import * as mtx from "./matrix.js";
 
 var canvas = document.querySelector("#gl-canvas") as HTMLCanvasElement;
 var vertexShaderSource = (document.querySelector("#vertexShader") as HTMLElement).innerText;
@@ -26,7 +27,7 @@ var attributeParameter = {
 }
 
 
-var myMesh = new mtx.Mesh(20,20, [-5, 5], [-5, 5]);
+var myMesh = new msh.Mesh(20,20, [-5, 5], [-5, 5]);
 
 myMesh.introduceFunction((x : number, y : number) => {return Math.sin(x + y)});
 
@@ -49,13 +50,17 @@ gl.useProgram(wrappedProgram.program);
 
 gl.enable(gl.DEPTH_TEST);
 
-gl.uniformMatrix3fv(wrappedProgram.uniforms.u_matrix.location, false,
-	[
-		0.6,	0,	0,
-		0,	0.6,	0,
-		0,		0,		0
-	])
-
 utils.enableAttributes(gl, wrappedProgram);
 
-gl.drawArrays(gl.TRIANGLES, 0, meshData.nValues/3);
+
+function drawAndAsk(now : number){
+	let angle = now * 0.0003;
+	gl.uniformMatrix4fv(wrappedProgram.uniforms.u_matrix.location, false, mtx.Matrix.perspectiveMatrix((45/180)*Math.PI, angle, 0.4).toArray());
+	
+	gl.drawArrays(gl.TRIANGLES, 0, meshData.nValues/3);
+
+	requestAnimationFrame(drawAndAsk);
+}
+
+requestAnimationFrame(drawAndAsk);
+
