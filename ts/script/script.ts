@@ -27,7 +27,7 @@ var attributeParameter = {
 }
 
 
-var myMesh = new msh.Mesh(20,20, [-5, 5], [-5, 5]);
+var myMesh = new msh.Mesh(200,200, [-5, 5], [-5, 5]);
 
 myMesh.introduceFunction((x : number, y : number) => {return Math.sin(x + y)});
 
@@ -39,8 +39,6 @@ var attributeData = {
 
 
 utils.appendAttributeProperties(wrappedProgram, attributeParameter);
-
-utils.generateAttributeBuffers(gl, wrappedProgram);
 
 utils.fillAttributeBuffers(gl, wrappedProgram, attributeData);
 

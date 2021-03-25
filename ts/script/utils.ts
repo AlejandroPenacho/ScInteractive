@@ -1,10 +1,11 @@
 interface WebGLWrappedAttribute {
 	location : number,
+	buffer : WebGLBuffer,
 	size? : number,
 	type? : number,
+	normalize? : boolean,
 	offset? : number,
 	stride? : number
-
 }
 
 interface WebGLAttributeProperties {
@@ -13,7 +14,6 @@ interface WebGLAttributeProperties {
 	normalize : boolean,
 	stride : number,
 	offset : number
-
 }
 
 interface WebGLWrappedUniform {
@@ -22,8 +22,8 @@ interface WebGLWrappedUniform {
 
 interface WebGLWrappedProgram {
 	program : WebGLProgram,
-	attributes : any,
-	uniforms : any
+	attributes : Dictionary<WebGLWrappedAttribute>,
+	uniforms : Dictionary<WebGLWrappedUniform>
 }
 
 interface Dictionary<T> {
@@ -54,7 +54,7 @@ export function createProgram(gl: WebGLRenderingContext, vertexSource : string, 
     var tryProgram = gl.createProgram();
 
 	if (!tryProgram){
-		throw "Program could not be generated (worse than compilation error";
+		throw "Program could not be generated (worse than compilation error)";
 	}
 
 	var program : WebGLProgram = tryProgram;
@@ -86,7 +86,15 @@ export function createProgram(gl: WebGLRenderingContext, vertexSource : string, 
 		if (!currentAttribute){
 			throw "Attribute failed";
 		}
-		activeAttributes[currentAttribute.name] = {location : i};
+		
+		
+		var newBuffer : WebGLBuffer | null = gl.createBuffer();
+		if (!newBuffer){
+			throw "Error creating buffer";
+		}
+
+		activeAttributes[currentAttribute.name] = {location : i, buffer : newBuffer};
+
 	}
 
 	var activeUniforms : Dictionary<WebGLWrappedUniform> = {};
