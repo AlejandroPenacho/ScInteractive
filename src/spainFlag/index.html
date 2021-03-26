@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<header>
+	<title> Test </title>
+	<meta charset="UTF-8">
+</header>
+
+<script id="vertexShader" type="notjs">
+	precision mediump float;
+
+	attribute vec3 a_position;
+
+	uniform mat4 u_matrix;
+	uniform float u_time;
+
+	varying vec2 v_textureCoord;
+	varying vec3 v_normal;
+
+	void main() {
+
+		float winded_z = sin(u_time * 0.01 + 3. * a_position.x) * (1. - pow((a_position.x - 1.)/2., 2.))*0.2;
+
+		float derivative_z = 3. * cos(u_time * 0.01 + 3. * a_position.x) * (1. - pow((a_position.x - 1.)/2., 2.))*0.2 - sin(u_time * 0.01 + 3. * a_position.x) * ((a_position.x-1.)/2.) * 0.2;
+
+		float z_normal = derivative_z / pow( pow(derivative_z, 2.) + 1., 0.5);
+		float x_normal = pow(1. - pow(z_normal, 2.), 0.5);
+
+		gl_Position = u_matrix * vec4(a_position.xy, winded_z, 1);
+
+		v_textureCoord = vec2( (a_position.x + 1.) / 2. , (a_position.y+1.)/2.);
+		v_normal = (u_matrix * vec4(x_normal,0,z_normal,1)).xyz;
+	}
+</script>
+
+<script id="fragmentShader" type="notjs">
+	precision mediump float;
+
+	uniform mat4 u_matrix;
+	uniform sampler2D u_image;
+	uniform vec3 u_lightRay;
+
+	varying vec2 v_textureCoord;
+	varying vec3 v_normal;
+
+	void main() {
+		vec4 unlightedColor = texture2D(u_image, v_textureCoord);
+
+		float colorIntensity = max(12. * dot(v_normal, (u_matrix * vec4(u_lightRay, 1)).xyz), 0.3);
+
+		gl_FragColor = vec4(unlightedColor.xyz * colorIntensity, 1);
+	}
+</script>
+
+<body>
+	<h1 id="hey"> HEY </h1>
+	
+	<canvas id="gl-canvas" width="1400" height="920" style="height: 1400; width: 920; border-style: solid"></canvas>
+
+	<script type="module" src="./script.js"></script>
+</body>
+
