@@ -127,7 +127,6 @@ var Matrix = /** @class */ (function () {
         }
     };
     Matrix.perspectiveMatrix = function (angleToVertical, zAngle, scale) {
-        console.log(angleToVertical);
         var A = new Matrix(4, 4, InitialMatrixType.Rotation, RotationAxis.X, -angleToVertical);
         A.rotate(RotationAxis.Z, -zAngle);
         A.scale(scale);

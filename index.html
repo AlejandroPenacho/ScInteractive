@@ -4,35 +4,15 @@
 	<title> Test </title>
 	<meta charset="UTF-8">
 </header>
-
-<script id="vertexShader" type="notjs">
-	attribute vec3 a_position;
-
-	uniform mat4 u_matrix;
-
-	varying float v_color;
-
-	void main() {
-		gl_Position = u_matrix * vec4(a_position, 1);
-		v_color = a_position.z;
-	}
-</script>
-
-<script id="fragmentShader" type="notjs">
-	precision mediump float;
-
-	varying float v_color;
-
-	void main() {
-		gl_FragColor = vec4(0, v_color, 0, 1);
-	}
 </script>
 
 <body>
 	<h1 id="hey"> HEY </h1>
 	
-	<canvas id="gl-canvas" width="1400" height="920" style="height: 1400; width: 920; border-style: solid"></canvas>
-
-	<script type="module" src="./src/script/script.js"></script>
+	<ul>
+		<li>
+			<a href="./src/simpleFunction/index.html"> Simple function</a>
+		</li>
+	</ul>
 </body>
 

@@ -159,7 +159,6 @@ export class Matrix {
 
     static perspectiveMatrix(angleToVertical: number, zAngle: number, scale : number) : Matrix {
 
-        console.log(angleToVertical);
         var A : Matrix = new Matrix(4,4, InitialMatrixType.Rotation, RotationAxis.X, -angleToVertical);
 
         A.rotate(RotationAxis.Z, -zAngle);
