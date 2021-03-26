@@ -1,0 +1,26 @@
+.theButton {
+	position: relative;
+	background-color : cyan;
+	width : 200px;
+	margin: auto;
+	margin-top : 50vh;
+	border-radius : 5px;
+	border-color : blue;
+	transform: translate(0px, -50%)
+}
+
+.textyle {
+	position: relative;
+	margin : auto;
+	padding: 10px;
+	text-align: center;
+
+}
+
+.secondButton {
+	position: absolute;
+	margin-left: 0px;
+	margin-top: 0px;
+	height: 100%;
+	border-radius : 5px;
+}
