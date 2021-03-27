@@ -1,0 +1,62 @@
+body{
+  background-color: #043860;
+}
+
+#main-div {
+  background-color: #0659b1;
+  margin:10px;
+  max-width: 600px;
+  margin: auto;
+  padding: 1%;
+}
+
+#content-header {
+  background-color: tomato;
+  padding: 20px;
+}
+
+#content-header h1 {
+  margin-left: 10%;
+  color: white;
+  font-size: 50px;
+  max-width: max-content;
+}
+
+#header-sub {
+  color: whitesmoke;
+  margin-right: 20px;
+  margin-left: auto;
+  width: 40%;
+  font-size: 20px;
+}
+
+ul {
+  padding: 20px;
+}
+
+ul li {
+  margin: 10px 0px;
+  color: transparent;
+}
+
+ul li a div.listLink{
+  background-color: grey;
+  height: 30px;
+  padding: 30px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+}
+
+
+ul li a div.listLink:hover {
+  background-color: yellowgreen;
+}
+
+ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+}
