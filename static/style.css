@@ -30,32 +30,37 @@ body{
   font-size: 20px;
 }
 
-ul {
+#mainContents{
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#mainContents a div.listLink{
+  background-color: grey;
+  height: 90px;
+  border-radius: 10px;
+  margin: 10px;
+  transition: height 0.5s, background-color 0.5s;
+  display: flex;
+  justify-content: space-between;
+}
+
+#mainContents a div.listLink:hover {
+  background-color: yellowgreen;
+  height: 140px;
+}
+
+.linkText {
   padding: 20px;
 }
 
-ul li {
-  margin: 10px 0px;
-  color: transparent;
+.listLink img {
+  height: 100%; 
+  border-radius: 0 10px 10px 0;
 }
 
-ul li a div.listLink{
-  background-color: grey;
-  height: 30px;
-  padding: 30px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  
-}
-
-
-ul li a div.listLink:hover {
-  background-color: yellowgreen;
-}
-
-ul li a {
+#mainContents a {
   color: white;
   text-decoration: none;
   font-size: 20px;
