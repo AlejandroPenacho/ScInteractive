@@ -1,9 +1,45 @@
+interface BlockData{
+	state : number[],
+	isSelected : boolean,
+	connectedBlocks : number[]
+}
+interface AppParameters {
+	actionScale : number,
+	timestep : number
+}
+interface AppState {
+	currentStatus : AppStatus,
+	blockDataArray : BlockData[],
+	connectionsArray : number[][]
+}
+enum AppStatus{
+	Nothing,
+	PuttingBlocks,
+	RunningSimulation
+}
+
+
 class App extends React.Component{
 	
 	// Main app component, holds all the React components in it
 
+	nBlocks : number;
+	blockDataArray : BlockData[];
+	simulationRunning : boolean;
+	connectionsArray : number[][];
+	parameters : AppParameters;
+	state : AppState;
+	props : any;
+	blockHasBeenSelected : boolean;
+	currentBlockSelected : number;
+
 	constructor(props){
+		
+		
+		
 		super(props);
+
+
 		
 		// Counter of the number of blocks currently in the page
 		this.nBlocks = 0;
@@ -11,8 +47,8 @@ class App extends React.Component{
 		// blockData is an array of elements, each one representing the
 		// key information of each block added to the page
 
-		let blockData = new Array(this.nBlocks);
-		this.blockData = blockData;
+		let blockDataArray = new Array(this.nBlocks);
+		this.blockDataArray = blockDataArray;
 
 
 		// simulationRunning is a boolean that becomes true when the
@@ -32,11 +68,12 @@ class App extends React.Component{
 
 
 		for (let i=0; i<this.nBlocks; i++){
-			this.blockData[i] = new Array(4);
-			this.blockData[i][0] = -150 + 300 * Math.random();
-			this.blockData[i][1] = -150 + 300 * Math.random();
-			this.blockData[i][2] = 0;
-			this.blockData[i][3] = new Array(0);
+			this.blockDataArray[i] = {
+				state : [-150 + 300 * Math.random(), -150 + 300 * Math.random()],
+				isSelected : false,
+				connectedBlocks : new Array()
+			}
+
 		}
 
 		// Connections array is initialized. Each element of this array consists
@@ -44,8 +81,8 @@ class App extends React.Component{
 		// connects.
 
 		let nConnections = 0;
-		let connections = new Array(nConnections);
-		this.connections = connections;
+		let connectionsArray : number[][] = new Array(nConnections);
+		this.connectionsArray = connectionsArray;
 
 		// The state of the App component is initialized. The important variables
 		// to track for re-rendering are the blocks, the connections and the status
@@ -57,16 +94,16 @@ class App extends React.Component{
 		//		2 -> The simulation is running (TODO: this state should not exist)
 
 		this.state = { 
-			currentStatus : 0,
-			blockData: blockData,
-			connections : connections,
+			currentStatus : AppStatus.Nothing,
+			blockDataArray : blockDataArray,
+			connectionsArray : connectionsArray,
 		};
 
 		// Parameters of the App: actionScale relates the distance between
 		// elements to the velocity they induce. Timestep sets the time for
 		// updating the positions of the blocks (currently at 60 Hz).
 
-		this.prmt = {actionScale : 0.1, timestep : 1/60};
+		this.parameters = {actionScale : 0.1, timestep : 1/60};
 
 
 		// These two variables are related to selection of blocks. 
@@ -85,8 +122,8 @@ class App extends React.Component{
 
 			// For each block, positions are obtained
 
-			let x = this.blockData[i][0];
-			let y = this.blockData[i][1];
+			let x = this.blockDataArray[i].state[0];
+			let y = this.blockDataArray[i].state[1];
 
 			let vx = 0; 
 			let vy = 0;
@@ -94,69 +131,69 @@ class App extends React.Component{
 			// For every block to which the current is one connected, the
 			// velocity increases in the direction of this block
 
-			this.blockData[i][3].map((secondBlock) => {
-				vx += this.prmt.actionScale * (this.blockData[secondBlock][0] - this.blockData[i][0]);
-				vy += this.prmt.actionScale * (this.blockData[secondBlock][1] - this.blockData[i][1]);
+			this.blockDataArray[i].connectedBlocks.map((secondBlock : number) => {
+				vx += this.parameters.actionScale * (this.blockDataArray[secondBlock].state[0] - this.blockDataArray[i].state[0]);
+				vy += this.parameters.actionScale * (this.blockDataArray[secondBlock].state[1] - this.blockDataArray[i].state[1]);
 			})
 
 			
 			// New positions are obtained by integrating velocity
 
-			let new_x = x + vx * this.prmt.timestep;
-			let new_y = y + vy * this.prmt.timestep;
+			let new_x = x + vx * this.parameters.timestep;
+			let new_y = y + vy * this.parameters.timestep;
 
 
-			this.blockData[i][0] = new_x;
-			this.blockData[i][1] = new_y;
+			this.blockDataArray[i].state[0] = new_x;
+			this.blockDataArray[i].state[1] = new_y;
 		}
 
 		// State is updated
 			
-		this.setState({blockData : this.blockData })
+		this.setState({blockDataArray : this.blockDataArray })
 
 	}
 
-	changeCurrentStatus = (nextStatus) => {
+	changeCurrentStatus = (nextStatus : AppStatus) => {
 
 		// Changes the status of the App. The first time "Run simulation" is
 		// clicked, a clock that updates the state every timestep 
 		this.setState({currentStatus : nextStatus});
 		console.log(nextStatus);
-		if (nextStatus === 2 && !this.simulationRunning) {
+		if (nextStatus === AppStatus.RunningSimulation && !this.simulationRunning) {
 			this.simulationRunning = true;
 			setInterval(this.tickUpdate, 1/60); //TODO: this should be this.prm.timestep
 		}
 	}
 
 
-	clickOnBlock = (blockID) => {
+	clickOnBlock = (blockID : number) => {
 		console.log("Click on " + blockID);
 		if (this.blockHasBeenSelected){
 			this.blockHasBeenSelected = false;
-			this.connections.push([this.currentBlockSelected, blockID]);
-			this.blockData[this.currentBlockSelected][2] = 0;
-			this.blockData[this.currentBlockSelected][3].push(blockID);
-			this.blockData[blockID][3].push(this.currentBlockSelected);
+			this.connectionsArray.push([this.currentBlockSelected, blockID]);
+			this.blockDataArray[this.currentBlockSelected].isSelected = false;
+			this.blockDataArray[this.currentBlockSelected].connectedBlocks.push(blockID);
+			this.blockDataArray[blockID].connectedBlocks.push(this.currentBlockSelected);
 		} else {
 			this.currentBlockSelected = blockID;
 			this.blockHasBeenSelected = true;
-			this.blockData[blockID][2] = 1;
+			this.blockDataArray[blockID].isSelected = true;
 		}
-		this.connections.map((x) => console.log(x[0] + " to " + x[1]));
-		this.setState({connections: this.connections, blockData : this.blockData});
+		this.connectionsArray.map((x) => console.log(x[0] + " to " + x[1]));
+		this.setState({connections: this.connectionsArray, blockData : this.blockDataArray});
 	}
 
-	clickOnAir = (e) => {
+	clickOnAir = (e : MouseEvent) => {
 		if (this.state.currentStatus === 1) {
 			
 
 			if (e.clientX < (window.innerWidth) * 0.8) {
 				let X = e.clientX - window.innerWidth/2;
 				let Y = e.clientY - window.innerHeight/2;
-				this.blockData.push([X,Y,0,new Array(0)]);
+				this.blockDataArray.push({state: [X, Y], isSelected : false, connectedBlocks : new Array()});
 				this.nBlocks ++;
-				this.setState({blockData : this.blockData});
-				console.log(this.blockData);
+				this.setState({blockData : this.blockDataArray});
+				console.log(this.blockDataArray);
 			}
 		}
 	}
@@ -169,10 +206,10 @@ class App extends React.Component{
 		<div className="App">
 			<header className="App-header" onClick={this.clickOnAir}>
 				<UserInterface currentStatus={this.state.currentStatus} changeCurrentStatusFunction={this.changeCurrentStatus}/>
-				{this.connections.map((x) => {
-					return <ConnectBar x0={this.state.blockData[x[0]][0]} y0={this.state.blockData[x[0]][1]} x1={this.state.blockData[x[1]][0]} y1={this.state.blockData[x[1]][1]} /> })
+				{this.connectionsArray.map((x) => {
+					return <ConnectBar x0={this.state.blockDataArray[x[0]].state[0]} y0={this.state.blockDataArray[x[0]].state[1]} x1={this.state.blockDataArray[x[1]].state[0]} y1={this.state.blockDataArray[x[1]].state[1]} /> })
 				}
-				{[...Array(this.nBlocks).keys()].map((x) => {return <Block data={this.state.blockData[x]} name={x} clickFunction={() => this.clickOnBlock(x)}/>})}
+				{[...Array(this.nBlocks).keys()].map((x) => {return <Block data={this.state.blockDataArray[x]} name={x} clickFunction={() => this.clickOnBlock(x)}/>})}
 			</header>
 		</div>
 	  );
@@ -181,6 +218,8 @@ class App extends React.Component{
 
 class UserInterface extends React.Component{
 
+	props : any;
+
 	constructor(props){
 		super(props)
 	}
@@ -188,20 +227,22 @@ class UserInterface extends React.Component{
 
 	render() {
 
-		if (this.props.currentStatus === 0 || this.props.currentStatus == 2) {
+		if (this.props.currentStatus === AppStatus.Nothing || this.props.currentStatus == AppStatus.RunningSimulation) {
 			var addBlockMessage = "Add block";
-			var addBlockFunction = () => this.props.changeCurrentStatusFunction(1);
+			var addBlockFunction = () => this.props.changeCurrentStatusFunction(AppStatus.PuttingBlocks);
 		} else {
 			var addBlockMessage = "Stop adding blocks";
-			var addBlockFunction = () => this.props.changeCurrentStatusFunction(0);
+			var addBlockFunction = () => this.props.changeCurrentStatusFunction(AppStatus.Nothing);
 		}
 		
 		return (
 			<div className="userInterface">
+				Small example of the consensus problem. Click "Add block" and click on the empty region to put bots. Click one bot to select it, and another to link them together.
+				When you click "Run simulation", linked bots will get closer. All bots are expected to converge to the same location.
 				<div className="userButton" onClick={addBlockFunction} >
 					{addBlockMessage}
 				</div>
-				<div className="userButton" onClick={() => this.props.changeCurrentStatusFunction(2)} >
+				<div className="userButton" onClick={() => this.props.changeCurrentStatusFunction(AppStatus.RunningSimulation)} >
 					Run simulation
 				</div>
 			</div>
@@ -211,6 +252,12 @@ class UserInterface extends React.Component{
 
 class Block extends React.Component{
 
+	props : {
+		data : BlockData,
+		name : number,
+		clickFunction : Function
+	};
+
 	constructor(props){
 		super(props)
 	}
@@ -219,11 +266,11 @@ class Block extends React.Component{
 	render() {
 		
 		let positionData = {
-			transform: "translate(" +  this.props.data[0] + "px, " + this.props.data[1] + "px)",
+			transform: "translate(" +  this.props.data.state[0] + "px, " + this.props.data.state[1] + "px)",
 			outlineStyle : "none"
 		}
 
-		if (this.props.data[2] === 1){
+		if (this.props.data.isSelected === true){
 			positionData.outlineStyle = "solid";
 		}
 
@@ -236,6 +283,8 @@ class Block extends React.Component{
 }
 
 class ConnectBar extends React.Component {
+
+	props : any;
 	
 	constructor(props){
 		super(props)

@@ -32,6 +32,8 @@
 	border-color : green;
 	border-width : 5px;
 	padding: 30px;
+	text-align: left;
+	font-size: 20px;
 }
 
 .myBlock {
@@ -55,6 +57,7 @@
 	border-width: 2px;
 	margin-top:20px;
 	margin-bottom: 20px;
+	padding-left : 10px;
 }
 
 .userButton:hover {
