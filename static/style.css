@@ -24,10 +24,13 @@ body{
 
 #header-sub {
   color: whitesmoke;
+  background-color: #ff745a;
   margin-right: 20px;
   margin-left: auto;
   width: 40%;
   font-size: 20px;
+  padding : 10px;
+  border-radius: 10px;
 }
 
 #mainContents{
@@ -54,6 +57,17 @@ body{
 .linkText {
   padding: 20px;
 }
+
+div.listLink .linkDescription {
+  margin-top: 10px;
+  display: none;
+  font-size: 15px;
+}
+
+div.listLink:hover .linkDescription {
+  display: block;
+}
+
 
 .listLink img {
   height: 100%; 
