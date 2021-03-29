@@ -52,7 +52,7 @@ utils.enableAttributes(gl, wrappedProgram);
 
 
 var image = new Image();
-image.src = "../../static/spain.jpg";
+image.src = "/public/spain_flag/spain.jpg";
 image.onload = function() {
 	imageLoaded();
 }
