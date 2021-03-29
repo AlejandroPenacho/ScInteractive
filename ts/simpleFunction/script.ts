@@ -1,6 +1,6 @@
-import * as utils from "../common/utils.js";
-import * as msh from "../common/mesh2D.js";
-import * as mtx from "../common/matrix.js";
+import * as utils from "../common/utils";
+import * as msh from "../common/mesh2D";
+import * as mtx from "../common/matrix";
 
 var canvas = document.querySelector("#gl-canvas") as HTMLCanvasElement;
 var vertexShaderSource = (document.querySelector("#vertexShader") as HTMLElement).innerText;

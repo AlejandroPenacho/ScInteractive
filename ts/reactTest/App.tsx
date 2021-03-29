@@ -1,3 +1,5 @@
+import * as React from "react";
+
 interface BlockData{
 	state : number[],
 	isSelected : boolean,
@@ -183,13 +185,13 @@ class App extends React.Component{
 		this.setState({connections: this.connectionsArray, blockData : this.blockDataArray});
 	}
 
-	clickOnAir = (e : MouseEvent) => {
+	clickOnAir = (event : React.MouseEvent<HTMLElement>) => {
 		if (this.state.currentStatus === 1) {
 			
 
-			if (e.clientX < (window.innerWidth) * 0.8) {
-				let X = e.clientX - window.innerWidth/2;
-				let Y = e.clientY - window.innerHeight/2;
+			if (event.clientX < (window.innerWidth) * 0.8) {
+				let X = event.clientX - window.innerWidth/2;
+				let Y = event.clientY - window.innerHeight/2;
 				this.blockDataArray.push({state: [X, Y], isSelected : false, connectedBlocks : new Array()});
 				this.nBlocks ++;
 				this.setState({blockData : this.blockDataArray});
@@ -201,7 +203,7 @@ class App extends React.Component{
 
 	render() {
 
-	let customStyle = {transform : "rotate(" + this.state.angle + "deg)"};
+	// let customStyle = {transform : "rotate(" + this.state.angle + "deg)"};
 	return (
 		<div className="App">
 			<header className="App-header" onClick={this.clickOnAir}>
@@ -255,7 +257,7 @@ class Block extends React.Component{
 	props : {
 		data : BlockData,
 		name : number,
-		clickFunction : Function
+		clickFunction : React.MouseEventHandler<HTMLDivElement>
 	};
 
 	constructor(props){
