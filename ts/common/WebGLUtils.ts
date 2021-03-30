@@ -1,4 +1,4 @@
-interface WebGLWrappedAttribute {
+export interface WebGLWrappedAttribute {
 	location : number,
 	buffer : WebGLBuffer,
 	size? : number,
@@ -7,28 +7,25 @@ interface WebGLWrappedAttribute {
 	offset? : number,
 	stride? : number
 }
-
-interface WebGLAttributeProperties {
+export interface WebGLAttributeProperties {
 	type : number,
 	size : number,
 	normalize : boolean,
 	stride : number,
 	offset : number
 }
-
-interface WebGLWrappedUniform {
+export interface WebGLWrappedUniform {
 	location : WebGLUniformLocation
 }
-
-interface WebGLWrappedProgram {
+export interface WebGLWrappedProgram {
 	program : WebGLProgram,
 	attributes : Dictionary<WebGLWrappedAttribute>,
 	uniforms : Dictionary<WebGLWrappedUniform>
 }
-
-interface Dictionary<T> {
+export interface Dictionary<T> {
 	[Key : string] : T
 }
+
 
 export function createProgram(gl: WebGLRenderingContext, vertexSource : string, fragmentSource : string){
 	// Takes a context, a string with the code for the vertex shader and
@@ -145,24 +142,6 @@ export function appendAttributeProperties(wrappedProgram : WebGLWrappedProgram, 
 		wrappedProgram.attributes[key].offset		=	attributeProperties[key].offset;
 	}
 	
-}
-
-export function generateAttributeBuffers(gl : WebGLRenderingContext, wrappedProgram : WebGLWrappedProgram) {
-	// Generates a buffer for each attribute, and appends it
-	// to its dictionary inside wrappedProgram. Does not take
-	// any additional input, and does not require anything.
-	
-	var attributeList = Object.keys(wrappedProgram.attributes);
-
-	for (let i=0; i<attributeList.length; i++) {
-		var attribute = wrappedProgram.attributes[attributeList[i]];
-		var newBuffer : WebGLBuffer | null = gl.createBuffer();
-		if (!newBuffer){
-			throw "Error creating buffer";
-		}
-
-		attribute.buffer = newBuffer;
-	}
 }
 
 export function fillAttributeBuffers(gl : WebGLRenderingContext,
