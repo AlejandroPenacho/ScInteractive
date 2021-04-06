@@ -1,9 +1,18 @@
+:root {
+	--color-a: #031634;
+	--color-b: #033694;
+	--color-c: #036564;
+	--color-d: #cdb380;
+	--color-e: #e8ddcb;
+}
+
+
 body{
-  background-color: #043860;
+  background-color: var(--color-a);
 }
 
 #main-div {
-  background-color: #0659b1;
+  background-color: var(--color-b);
   margin:10px;
   max-width: 600px;
   margin: auto;
@@ -11,19 +20,19 @@ body{
 }
 
 #content-header {
-  background-color: tomato;
+  background-color: var(--color-c);
   padding: 20px;
 }
 
 #content-header h1 {
   margin-left: 10%;
-  color: white;
+  color: var(--color-e);
   font-size: 50px;
   max-width: max-content;
 }
 
 #header-sub {
-  color: whitesmoke;
+  color: var(--color-e);
   background-color: #ff745a;
   margin-right: 20px;
   margin-left: auto;
@@ -40,7 +49,7 @@ body{
 }
 
 #mainContents a div.listLink{
-  background-color: grey;
+  background-color: var(--color-d);
   height: 90px;
   border-radius: 10px;
   margin: 10px;
@@ -75,7 +84,7 @@ div.listLink:hover .linkDescription {
 }
 
 #mainContents a {
-  color: white;
+  color: black;
   text-decoration: none;
   font-size: 20px;
 }
